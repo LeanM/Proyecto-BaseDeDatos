@@ -1,6 +1,7 @@
 package LogIn;
 
-import GUI.VentanaSelect;
+import GUI.Ventanas.VentanaAdmin;
+import GUI.Ventanas.VentanaInspector;
 import quick.dbtable.*;
 import sun.rmi.runtime.Log;
 
@@ -13,7 +14,7 @@ import java.sql.SQLException;
 public class LogIn extends Component {
 
     protected DBTable conexionBD = null;
-    private VentanaSelect ventanaSelect;
+    private JFrame nuevaVentana;
 
     public static LogIn instance = null;
 
@@ -27,6 +28,7 @@ public class LogIn extends Component {
     }
 
     public void conectarBD(String user, String password){
+    		
         if (this.conexionBD == null)
         {
             try
@@ -39,7 +41,7 @@ public class LogIn extends Component {
 
                 conexionBD = new DBTable();
                 this.conexionBD.connectDatabase(driver,uriConexion,user,password);
-                ventanaSelect = new VentanaSelect(user,conexionBD);
+                nuevaVentana = nuevaVentana(user);
             }
             catch (SQLException ex)
             {
@@ -58,8 +60,8 @@ public class LogIn extends Component {
     }
 
 
-    private void desconectarBD()
-    {
+    private void desconectarBD() {
+    	
         if (this.conexionBD != null)
         {
             try
@@ -75,11 +77,14 @@ public class LogIn extends Component {
             }
         }
     }
+    
+    private JFrame nuevaVentana(String user) {
+    	
+    	if (user.equals("admin"))
+            return new VentanaAdmin(conexionBD);
 
-
-
-
-
+        else return new VentanaInspector(conexionBD);
+    }
 
 
 }

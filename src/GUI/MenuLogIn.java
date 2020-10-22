@@ -64,12 +64,22 @@ public class MenuLogIn extends JFrame{
         Iniciar_Sesion.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
+            	
+            	String nombreUser=user.getText();
+            	
+            	if(!(nombreUser.equals("admin") || nombreUser.equals("inspector"))) {
+            		JOptionPane.showMessageDialog(null,"Por favor, ingrese como usuario admin o inspector");
+            		user.setText("");
+    				password.setText("");
+            	}
+            		
+            	else {
+            		LogIn.getLogIn().conectarBD(user.getText(),password.getText());
+            		Iniciar_Sesion.setEnabled(false);
 
-                LogIn.getLogIn().conectarBD(user.getText(),password.getText());
-                Iniciar_Sesion.setEnabled(false);
-
-                MenuLogIn.getMenu().setVisible(false);
-                instance=null;
+            		MenuLogIn.getMenu().setVisible(false);
+            		instance=null;
+            	}
             }
         });
 
