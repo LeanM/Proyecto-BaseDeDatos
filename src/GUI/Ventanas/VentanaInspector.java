@@ -7,19 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -97,6 +86,7 @@ public class VentanaInspector extends JFrame{
        
        fondoInicio = new JPanel();
        fondoInicio.setBorder(new EmptyBorder(5, 5, 5, 5));
+       fondoInicio.setBackground(Color.LIGHT_GRAY);
        fondoInicio.setLayout(null);
 
        textoLegajo = new JTextField();
@@ -133,12 +123,19 @@ public class VentanaInspector extends JFrame{
 		
 	     fondoIngresado = new JPanel();
 	     fondoIngresado.setBorder(new EmptyBorder(5, 5, 5, 5));
+	     fondoIngresado.setBackground(Color.LIGHT_GRAY);
 	     fondoIngresado.setLayout(null);
+
+		 //Creo bordes
+		 Border raisedbevel = BorderFactory.createRaisedBevelBorder();
+		 Border loweredbevel = BorderFactory.createLoweredBevelBorder();
+		 Border compuesto = BorderFactory.createCompoundBorder(raisedbevel,loweredbevel);
 	
 	     estacionados= new DefaultListModel<String>();
 	     
 	     listaE = new JList<String>(estacionados);
-	     
+
+	     listaE.setBorder(compuesto);
 	     listaE.setBounds(100,200,500,500);
 	     fondoIngresado.add(listaE);
 	     
@@ -148,12 +145,16 @@ public class VentanaInspector extends JFrame{
 	     
 	     agregar = new JButton("Agregar patente");
 	     agregar.setBounds(50,50,200,50);
+	     agregar.setBackground(Color.DARK_GRAY);
+	     agregar.setForeground(Color.WHITE);
 	     oyenteAgregar = new OyenteAgregar();
 	     agregar.addActionListener(oyenteAgregar);
 	     fondoIngresado.add(agregar);
 	     
 	     eliminar = new JButton("Eliminar patente");
 	     eliminar.setBounds(400,50,200,50);
+	     eliminar.setBackground(Color.DARK_GRAY);
+	     eliminar.setForeground(Color.WHITE);
 	     oyenteEliminar = new OyenteEliminar();
 	     eliminar.addActionListener(oyenteEliminar);
 	     fondoIngresado.add(eliminar);
@@ -179,6 +180,8 @@ public class VentanaInspector extends JFrame{
 	     
 	     finalizarCargaPatentes = new JButton("Finalizar Carga");
 	     finalizarCargaPatentes.setBounds(900,650,200,50);
+		 finalizarCargaPatentes.setBackground(Color.DARK_GRAY);
+		 finalizarCargaPatentes.setForeground(Color.WHITE);
 	     oyenteFCP = new OyenteFCP();
 	     finalizarCargaPatentes.addActionListener(oyenteFCP);
 	     finalizarCargaPatentes.setEnabled(false);
@@ -468,9 +471,27 @@ public class VentanaInspector extends JFrame{
 		
 		return nuevo;
 	}
-	
-	
-	
+
+	private String getPWDCifrada(String pwd){
+
+		String toReturn=null;
+
+		try {
+			//	Statement para obtener la password cifrada con md5 de mysql
+			Statement stmtMD5 = conexion.createStatement();
+			String md5SQL = "SELECT md5('" + pwd + "') as password_cifrada";
+			ResultSet rsMD5 = stmtMD5.executeQuery(md5SQL);
+
+			rsMD5.next();
+			toReturn = rsMD5.getString("password_cifrada");
+			rsMD5.close();
+			stmtMD5.close();
+			//	Ya obtube la password cifrada (guardada en variable toReturn)
+		}
+		catch (SQLException ex) {ex.printStackTrace();}
+
+		return toReturn;
+	}
 	
 	//   --------               OYENTES                    ---------     //   
 	
@@ -495,16 +516,18 @@ public class VentanaInspector extends JFrame{
 			
 			try {
 			    conexion = tablaBD.getConnection();
+			    String pwd_cifrada = getPWDCifrada(pwd);
+
 	            stmt = conexion.createStatement();
 	            sql = "SELECT legajo,password FROM inspectores";
 	            rs = stmt.executeQuery(sql);
-	            
-	            while(rs.next() && !legajoValido) 
-	            	if(rs.getString("legajo").equals(legajoIngresado)) {
-	            		legajoValido=true;
-	            		pwdValida=rs.getString("password").equals(pwd);
-	            	}
-	            
+
+	            while(rs.next() && !legajoValido) {
+					if (rs.getString("legajo").equals(legajoIngresado)) {
+						legajoValido = true;
+						pwdValida = rs.getString("password").equals(pwd_cifrada);
+					}
+				}
 	            stmt.close();
 	            rs.close();
 			}
@@ -568,7 +591,7 @@ public class VentanaInspector extends JFrame{
 		
 		public void actionPerformed(ActionEvent arg0) {
 			
-			String patente = textoPatente.getText();
+			String patente = textoPatente.getText().toUpperCase();
 			
 			if(patente.isEmpty())
 				JOptionPane.showMessageDialog(null,"Por favor, ingrese una patente");
