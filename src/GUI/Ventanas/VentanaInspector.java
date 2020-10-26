@@ -290,7 +290,7 @@ public class VentanaInspector extends JFrame{
             	fecha=rs.getString(2);
             	turno=turno(rs.getInt(3));
             	dia=dia(rs.getInt(4));
-            	System.out.println(hora+fecha+turno+dia);
+            	//System.out.println(hora+fecha+turno+dia);
             }
             	
             stmt.close();
@@ -304,7 +304,7 @@ public class VentanaInspector extends JFrame{
 		}
         //-----------------------------------------------------------------------------------------------//
 		 try {
-			conexion = tablaBD.getConnection();System.out.println(legajo+calle+altura+parquimetro);
+			conexion = tablaBD.getConnection();//System.out.println(legajo+calle+altura+parquimetro);
 		    stmt = conexion.createStatement();
             sql = "SELECT * FROM asociado_con WHERE legajo='"+legajo+"'";
             rs = stmt.executeQuery(sql);
@@ -324,7 +324,7 @@ public class VentanaInspector extends JFrame{
 		}
 		
 		catch (SQLException ex) {
-			System.out.println("Error al buscar las ubicaciones del permitadas para el legajo");
+			System.out.println("Error al buscar las ubicaciones permitadas para el legajo");
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
