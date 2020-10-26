@@ -12,6 +12,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -35,6 +36,9 @@ public class VentanaInspector extends JFrame{
 	protected JTextField textoLegajo;
 	protected JTextField textoContraseña;
 	protected JTextField textoPatente;
+	
+	protected JLabel labelLegajo;
+	protected JLabel labelContraseña;
 	 
 	protected JButton ingresar;
 	protected ActionListener oyenteIngresar;
@@ -96,14 +100,24 @@ public class VentanaInspector extends JFrame{
        fondoInicio.setLayout(null);
 
        textoLegajo = new JTextField();
-       textoLegajo.setBounds(30, 241, 400, 30);
+       textoLegajo.setBounds(200, 241, 150, 30);
        textoLegajo.setBackground(Color.LIGHT_GRAY);
        fondoInicio.add(textoLegajo);
        
        textoContraseña = new JPasswordField();
-       textoContraseña.setBounds(30, 497, 400, 30);
+       textoContraseña.setBounds(200, 497, 150, 30);
        textoContraseña.setBackground(Color.LIGHT_GRAY);
        fondoInicio.add(textoContraseña);
+       
+       labelLegajo = new JLabel("N° Legajo:");
+       labelLegajo.setBounds(100,241,60,20);
+       labelLegajo.setForeground(Color.BLACK);
+       fondoInicio.add(labelLegajo);
+
+       labelContraseña = new JLabel("Password:");
+       labelContraseña.setBounds(100,497,75,20);
+       labelContraseña.setForeground(Color.BLACK);
+       fondoInicio.add(labelContraseña);
 
        ingresar = new JButton("Ingresar");
        ingresar.setBounds(850,309,300,150);
@@ -268,10 +282,15 @@ public class VentanaInspector extends JFrame{
             rs = stmt.executeQuery(sql);
             
             if(rs.next()) {
-            	hora="09:05:04";//rs.getString(1);
-            	fecha="2020-10-20";//rs.getString(2);
-            	turno="m";//turno(rs.getInt(3));
-            	dia="ma";//dia(rs.getInt(4));
+            	/*hora="09:05:04";
+            	fecha="2020-10-23";
+            	turno="m";
+            	dia="vi";*/
+            	hora=rs.getString(1);
+            	fecha=rs.getString(2);
+            	turno=turno(rs.getInt(3));
+            	dia=dia(rs.getInt(4));
+            	System.out.println(hora+fecha+turno+dia);
             }
             	
             stmt.close();
@@ -334,19 +353,19 @@ public class VentanaInspector extends JFrame{
 		String dia=null;
 		
 		switch (numero) {
-			case 1: dia="lu";
+			case 1: dia="do";
 			break;
-			case 2: dia="ma";
+			case 2: dia="lu";
 			break;
-			case 3: dia="mi";
+			case 3: dia="ma";
 			break;
-			case 4: dia="ju";
+			case 4: dia="mi";
 			break;
-			case 5: dia="vi";
+			case 5: dia="ju";
 			break;
-			case 6: dia="sa";
+			case 6: dia="vi";
 			break;
-			case 7: dia="do";
+			case 7: dia="sa";
 			break;
 		}
 		
@@ -409,10 +428,6 @@ public class VentanaInspector extends JFrame{
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		
-		
-		//multasCreadas = new String[cantAnotados][7];
-		
-		//int pointerMultas = 0;
 		
 		for(int i=0;i<cantAnotados;i++) {
 			int j=0;
@@ -613,7 +628,7 @@ protected class OyenteAlturas implements ActionListener {
 	
 		public void actionPerformed(ActionEvent arg0) { // Hay que checkear que el inspector pueda hacer multas en la hora y lugar que esta intentando, y si puede, simular la conexion
 			
-			String datos[] = habilitado();  //datos[0] es la fecha, datos[1] es la hora. datos[2] es el id_asociado_con
+			String datos[] = habilitado();  //datos[0] es la fecha, datos[1] es la hora, datos[2] es el id_asociado_con
 			TableModel modelo;  // aca se guardan las multas generadas, si es que hay
 			
 			if(datos!=null) {
@@ -621,11 +636,14 @@ protected class OyenteAlturas implements ActionListener {
 				modelo = generarMultas(datos[0],datos[1],datos[2]);
 				
 				if(modelo.getRowCount()>0)
-					JOptionPane.showMessageDialog(null, new JScrollPane(new JTable(modelo)));
+					JOptionPane.showMessageDialog(null, new JScrollPane(new JTable(modelo)),"Multas Labradas",JOptionPane.INFORMATION_MESSAGE);
 				else JOptionPane.showMessageDialog(null, "No hay autos en infraccion entre los cargados");
+				
+				estacionados.clear();
+				finalizarCargaPatentes.setEnabled(false);
 			}
 			else {
-				JOptionPane.showMessageDialog(null,"No esta habilitado para labar multas en esta ubicacion");
+				JOptionPane.showMessageDialog(null,"No esta habilitado para labrar multas en esta ubicacion");
 			}
 		}
 		

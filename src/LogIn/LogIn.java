@@ -52,7 +52,7 @@ public class LogIn extends Component {
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
             }
-            catch (ClassNotFoundException ex) {ex.printStackTrace();}
+            catch (ClassNotFoundException ex) {ex.printStackTrace();} 
         }
 
 
