@@ -71,13 +71,22 @@ public class MenuLogIn extends JFrame{
         Iniciar_Sesion.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                //  Listener de boton de iniciar sesion el cual llama a la clase LogIn la cual realiza la conexion
-                LogIn.getLogIn().conectarBD(user.getText(),password.getText());
+
                 Iniciar_Sesion.setEnabled(false);
 
-                //  Elimina la ventana MenuLogin
-                MenuLogIn.getMenu().setVisible(false);
-                instance=null;
+                //  Listener de boton de iniciar sesion el cual llama a la clase LogIn la cual realiza la conexion
+                LogIn.getLogIn().conectarBD(user.getText(),password.getText());
+
+                if (LogIn.getLogIn().conexionEstablecida()) {
+                    //  Elimina la ventana MenuLogin
+                    MenuLogIn.getMenu().setVisible(false);
+                    instance = null;
+                }
+                else {
+                    user.setText("");
+                    password.setText("");
+                    Iniciar_Sesion.setEnabled(true);
+                }
             }
         });
 

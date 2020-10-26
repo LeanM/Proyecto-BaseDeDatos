@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public class LogIn extends Component {
 
-    protected DBTable conexionBD = null;
+    private DBTable conexionBD = null;
     private VentanaSelect ventanaSelect;
 
     public static LogIn instance = null;
@@ -58,8 +58,10 @@ public class LogIn extends Component {
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
+
+                conexionBD = null;
             }
-            catch (ClassNotFoundException ex) {ex.printStackTrace();} 
+            catch (ClassNotFoundException ex) {ex.printStackTrace();}
         }
 
 
@@ -88,7 +90,9 @@ public class LogIn extends Component {
     }
 
 
-
+    public boolean conexionEstablecida(){
+        return this.conexionBD != null;
+    }
 
 
 
