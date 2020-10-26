@@ -1,7 +1,6 @@
 package LogIn;
 
-import GUI.Ventanas.VentanaAdmin;
-import GUI.Ventanas.VentanaInspector;
+import GUI.VentanaSelect;
 import quick.dbtable.*;
 import sun.rmi.runtime.Log;
 
@@ -14,7 +13,7 @@ import java.sql.SQLException;
 public class LogIn extends Component {
 
     protected DBTable conexionBD = null;
-    private JFrame nuevaVentana;
+    private VentanaSelect ventanaSelect;
 
     public static LogIn instance = null;
 
@@ -27,10 +26,18 @@ public class LogIn extends Component {
         else return instance;
     }
 
+    /**
+     * Metodo encargado de realizar la conexion con la base de datos
+     * usando el usuario "user" y la contraseña "password" pasados
+     * como parametros
+     *
+     * @param user
+     * @param password
+     */
+
     public void conectarBD(String user, String password){
-    		
         if (this.conexionBD == null)
-        {
+        {   //Intenta conectar con la base de datos utilizando DBTable
             try
             {
                 String driver ="com.mysql.cj.jdbc.Driver";
@@ -40,11 +47,11 @@ public class LogIn extends Component {
                         baseDatos + "?serverTimezone=America/Argentina/Buenos_Aires";
 
                 conexionBD = new DBTable();
-                this.conexionBD.connectDatabase(driver,uriConexion,user,password);
-                nuevaVentana = nuevaVentana(user);
+                this.conexionBD.connectDatabase(driver,uriConexion,user,password); // Conecta con la base de datos
+                ventanaSelect = new VentanaSelect(user,conexionBD); // Se selecciona la ventana a inicializar si la conexion se realizo correctamente
             }
             catch (SQLException ex)
-            {
+            {   // No se pudo conectar de forma correcta a la base de datos
                 JOptionPane.showMessageDialog(this,
                         "Se produjo un error al intentar conectarse a la base de datos.\n" + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -59,9 +66,11 @@ public class LogIn extends Component {
 
     }
 
-
-    private void desconectarBD() {
-    	
+    /**
+     *  Metodo encargado de desconectarse de la base de datos.
+     */
+    private void desconectarBD()
+    {
         if (this.conexionBD != null)
         {
             try
@@ -77,14 +86,11 @@ public class LogIn extends Component {
             }
         }
     }
-    
-    private JFrame nuevaVentana(String user) {
-    	
-    	if (user.equals("admin"))
-            return new VentanaAdmin(conexionBD);
 
-        else return new VentanaInspector(conexionBD);
-    }
+
+
+
+
 
 
 }

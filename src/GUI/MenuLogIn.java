@@ -27,6 +27,13 @@ public class MenuLogIn extends JFrame{
         }
         return instance;
     }
+
+    /**
+     * Constructor de menu login que inicializa la ventana de login para
+     * permitirle al usuario conectarse a la base de datos con su
+     * usuario y contraseña.
+     *
+     */
     private MenuLogIn(){
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,22 +71,13 @@ public class MenuLogIn extends JFrame{
         Iniciar_Sesion.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-            	
-            	String nombreUser=user.getText();
-            	
-            	if(!(nombreUser.equals("admin") || nombreUser.equals("inspector"))) {
-            		JOptionPane.showMessageDialog(null,"Por favor, ingrese como usuario admin o inspector");
-            		user.setText("");
-    				password.setText("");
-            	}
-            		
-            	else {
-            		LogIn.getLogIn().conectarBD(user.getText(),password.getText());
-            		Iniciar_Sesion.setEnabled(false);
+                //  Listener de boton de iniciar sesion el cual llama a la clase LogIn la cual realiza la conexion
+                LogIn.getLogIn().conectarBD(user.getText(),password.getText());
+                Iniciar_Sesion.setEnabled(false);
 
-            		MenuLogIn.getMenu().setVisible(false);
-            		instance=null;
-            	}
+                //  Elimina la ventana MenuLogin
+                MenuLogIn.getMenu().setVisible(false);
+                instance=null;
             }
         });
 
