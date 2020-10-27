@@ -404,7 +404,7 @@ public class VentanaInspector extends JFrame{
 		String patenteActual;
 		boolean estaEnInfraccion=true;
 		
-		String[] nombresColumnas = {"Fecha","Hora","Calle","Altura","Patente","Legajo inspector"};
+		String[] nombresColumnas = {"N° de multa","Fecha","Hora","Calle","Altura","Patente","Legajo inspector"};
 		DefaultTableModel model = new DefaultTableModel(nombresColumnas, 0);
 
 		
@@ -444,9 +444,13 @@ public class VentanaInspector extends JFrame{
 					conexion = tablaBD.getConnection();
 				    stmt = conexion.createStatement();
 		            sql = "INSERT INTO multa(fecha, hora, patente, id_asociado_con) VALUES ('"+fecha+"','"+hora+"','"+patenteActual+"',"+id_asociado_con+")";
-		            stmt.execute(sql);
+				    stmt.execute(sql);
+				    
+				    sql = "select numero from multa where fecha='"+fecha+"' and hora='"+hora+"' and patente='"+patenteActual+"'";
+		            rs = stmt.executeQuery(sql);
 		            
-		            model.addRow(new Object[] {fecha,hora,calle,altura,patenteActual,legajo}); //faltaría el numero de multa
+				    if(rs.next())
+				    	model.addRow(new Object[] {rs.getString(1),fecha,hora,calle,altura,patenteActual,legajo}); 
 		            	           	            
 		            stmt.close();
 		         }
