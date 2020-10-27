@@ -17,7 +17,7 @@ public class VentanaSelect {
         if (user.equals("admin")) // Si al loguear se introdujo como usuario "admin" y se valido la contraseña, ejecuta la ventana de admin
             ventanaAdmin = new VentanaAdmin(conexion);
 
-        else if (user.equals("inspector")) // Si al loguear se introdujo como usuario "inspector" y se valido la contraseña, ejecuta la ventana de inspector
-                ventanaInspector = new VentanaInspector(conexion);
+        //else if (user.equals("inspector")) // Si al loguear se introdujo como usuario "inspector" y se valido la contraseña, ejecuta la ventana de inspector
+                //ventanaInspector = new VentanaInspector(conexion);
     }
 }

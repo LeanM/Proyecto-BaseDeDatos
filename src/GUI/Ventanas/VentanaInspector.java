@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,18 +22,7 @@ public class VentanaInspector extends JFrame{
 	
 	protected static final long serialVersionUID = 1L;
 	
-	protected JPanel fondoInicio;
-	protected JPanel fondoIngresado;
-	
-	protected JTextField textoLegajo;
-	protected JTextField textoContraseña;
-	protected JTextField textoPatente;
-	
-	protected JLabel labelLegajo;
-	protected JLabel labelContraseña;
-	 
-	protected JButton ingresar;
-	protected ActionListener oyenteIngresar;
+	protected JPanel fondo;
 	 
 	protected JButton agregar;
 	protected ActionListener oyenteAgregar;
@@ -40,6 +32,8 @@ public class VentanaInspector extends JFrame{
 	 
 	protected JButton finalizarCargaPatentes;
 	protected ActionListener oyenteFCP;
+	
+	protected JTextField textoPatente;
 	 
 	protected JComboBox <String> calles;
 	protected ActionListener oyenteCalles;
@@ -49,6 +43,7 @@ public class VentanaInspector extends JFrame{
 	 
 	protected DefaultListModel <String> estacionados;
 	protected JList<String> listaE;
+	protected List<String> patentes;
 	
 	protected DBTable tablaBD;
 	
@@ -63,7 +58,7 @@ public class VentanaInspector extends JFrame{
     ResultSet rs;
 	
 	 
-	public VentanaInspector(DBTable tabla) {
+	public VentanaInspector(DBTable tabla,String legajo) {
 		
 		setVisible(true);
         getContentPane().setLayout(null);
@@ -72,59 +67,23 @@ public class VentanaInspector extends JFrame{
         setResizable(false);
 		
 		tablaBD=tabla;
+		this.legajo=legajo; 
+		
+		crearFondo();
 		 
-		crearFondoInicio();
-		crearFondoIngresado();
-		 
-		setContentPane(fondoInicio);
+		setContentPane(fondo);
 	    validate();
 		 
 	 }
 
 	
-	protected void crearFondoInicio () {  // Crea el panel inicial, desde el cual se accede a la unidad personal
-       
-       fondoInicio = new JPanel();
-       fondoInicio.setBorder(new EmptyBorder(5, 5, 5, 5));
-       fondoInicio.setBackground(Color.LIGHT_GRAY);
-       fondoInicio.setLayout(null);
-
-       textoLegajo = new JTextField();
-       textoLegajo.setBounds(200, 241, 150, 30);
-       textoLegajo.setBackground(Color.LIGHT_GRAY);
-       fondoInicio.add(textoLegajo);
-       
-       textoContraseña = new JPasswordField();
-       textoContraseña.setBounds(200, 497, 150, 30);
-       textoContraseña.setBackground(Color.LIGHT_GRAY);
-       fondoInicio.add(textoContraseña);
-       
-       labelLegajo = new JLabel("N° Legajo:");
-       labelLegajo.setBounds(100,241,60,20);
-       labelLegajo.setForeground(Color.BLACK);
-       fondoInicio.add(labelLegajo);
-
-       labelContraseña = new JLabel("Password:");
-       labelContraseña.setBounds(100,497,75,20);
-       labelContraseña.setForeground(Color.BLACK);
-       fondoInicio.add(labelContraseña);
-
-       ingresar = new JButton("Ingresar");
-       ingresar.setBounds(850,309,300,150);
-       ingresar.setBackground(Color.DARK_GRAY);
-       ingresar.setForeground(Color.WHITE);
-       oyenteIngresar= new OyenteIngresar();
-       ingresar.addActionListener(oyenteIngresar);
-       fondoInicio.add(ingresar);
 	
-	}
-	
-	protected void crearFondoIngresado() {  // Crea el panel que se usa una vez que se ingresó a la unidad personal
+	protected void crearFondo() {  // Crea el panel 
 		
-	     fondoIngresado = new JPanel();
-	     fondoIngresado.setBorder(new EmptyBorder(5, 5, 5, 5));
-	     fondoIngresado.setBackground(Color.LIGHT_GRAY);
-	     fondoIngresado.setLayout(null);
+	     fondo = new JPanel();
+	     fondo.setBorder(new EmptyBorder(5, 5, 5, 5));
+	     fondo.setBackground(Color.LIGHT_GRAY);
+	     fondo.setLayout(null);
 
 		 //Creo bordes
 		 Border raisedbevel = BorderFactory.createRaisedBevelBorder();
@@ -137,11 +96,11 @@ public class VentanaInspector extends JFrame{
 
 	     listaE.setBorder(compuesto);
 	     listaE.setBounds(100,200,500,500);
-	     fondoIngresado.add(listaE);
+	     fondo.add(listaE);
 	     
 	     textoPatente = new JTextField();
 	     textoPatente.setBounds(800,50,400,30);
-	     fondoIngresado.add(textoPatente);
+	     fondo.add(textoPatente);
 	     
 	     agregar = new JButton("Agregar patente");
 	     agregar.setBounds(50,50,200,50);
@@ -149,7 +108,7 @@ public class VentanaInspector extends JFrame{
 	     agregar.setForeground(Color.WHITE);
 	     oyenteAgregar = new OyenteAgregar();
 	     agregar.addActionListener(oyenteAgregar);
-	     fondoIngresado.add(agregar);
+	     fondo.add(agregar);
 	     
 	     eliminar = new JButton("Eliminar patente");
 	     eliminar.setBounds(400,50,200,50);
@@ -157,26 +116,26 @@ public class VentanaInspector extends JFrame{
 	     eliminar.setForeground(Color.WHITE);
 	     oyenteEliminar = new OyenteEliminar();
 	     eliminar.addActionListener(oyenteEliminar);
-	     fondoIngresado.add(eliminar);
+	     fondo.add(eliminar);
 	     
 	     calles = new JComboBox<String>();  //hay que cargar las ubicaciones como strings desde la bd
 	     calles.setSelectedIndex(-1);
 	     calles.setBounds(900,250,200,50);
 	     oyenteCalles = new OyenteCalles();
 	     calles.addActionListener(oyenteCalles);
-	     fondoIngresado.add(calles);
+	     fondo.add(calles);
 	     
-	     alturas = new JComboBox<String>(); //hay que cargar los parquimetros de la ubicacion que se elige como strings desde la bd
+	     alturas = new JComboBox<String>(); //hay que cargar las alturas de la calle elegida como strings desde la bd
 	     alturas.setSelectedIndex(-1);
 	     alturas.setBounds(900,350,200,50);
 	     oyenteAlturas = new OyenteAlturas();
 	     alturas.addActionListener(oyenteAlturas);
-	     fondoIngresado.add(alturas);
+	     fondo.add(alturas);
 	     
-	     parquimetros = new JComboBox<String>(); //hay que cargar los parquimetros de la ubicacion que se elige como strings desde la bd
+	     parquimetros = new JComboBox<String>(); //hay que cargar los parquimetros de la calle y altura elegidas como strings desde la bd
 	     parquimetros.setSelectedIndex(-1);
 	     parquimetros.setBounds(900,450,200,50);
-	     fondoIngresado.add(parquimetros);
+	     fondo.add(parquimetros);
 	     
 	     finalizarCargaPatentes = new JButton("Finalizar Carga");
 	     finalizarCargaPatentes.setBounds(900,650,200,50);
@@ -185,7 +144,12 @@ public class VentanaInspector extends JFrame{
 	     oyenteFCP = new OyenteFCP();
 	     finalizarCargaPatentes.addActionListener(oyenteFCP);
 	     finalizarCargaPatentes.setEnabled(false);
-	     fondoIngresado.add(finalizarCargaPatentes);
+	     fondo.add(finalizarCargaPatentes);
+	     
+	     cargarPatentes();
+	     actualizarCalles();
+	     actualizarAlturas();
+	     actualizarParquimetros();
 	     
 	}
 	
@@ -200,6 +164,64 @@ public class VentanaInspector extends JFrame{
 		if(estacionados.isEmpty() || calles.getSelectedIndex()==-1 || alturas.getSelectedIndex()==-1)
 			finalizarCargaPatentes.setEnabled(false);
 		else finalizarCargaPatentes.setEnabled(true);
+	}
+	
+	protected void cargarPatentes() {
+		
+		try {
+		    conexion = tablaBD.getConnection();
+		    stmt = conexion.createStatement();
+            sql = "SELECT patente FROM automoviles";
+            rs = stmt.executeQuery(sql);
+            
+            patentes = new LinkedList<String>();
+            
+            while(rs.next()) 
+            	patentes.add(rs.getString("patente"));
+           
+            stmt.close();
+            rs.close();
+		}
+		
+		catch (SQLException ex) {
+			System.out.println("Error al obtener las patentes");
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		
+	}
+	
+	protected void actualizarCalles() {
+
+		try {
+		    conexion = tablaBD.getConnection();
+		    stmt = conexion.createStatement();
+            sql = "SELECT calle FROM parquimetros";
+            rs = stmt.executeQuery(sql);
+            
+            String [] callesBD = new String [99999]; // Lo hago de esta forma porque no encontre como obtener el tamaño del resultset
+            int index = 0;
+            DefaultComboBoxModel<String> model;
+            
+            while(rs.next()) 
+            	callesBD[index++]=rs.getString("calle");
+            
+            model = new DefaultComboBoxModel<String>(eliminarEspacios(index,callesBD));
+            calles.setModel(model);
+           
+            stmt.close();
+            rs.close();
+		}
+		
+		catch (SQLException ex) {
+			System.out.println("Error al obtener las calles");
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		
+		calle=(String)calles.getSelectedItem();
 	}
 	
 	
@@ -276,7 +298,6 @@ public class VentanaInspector extends JFrame{
 		String turno=null;
 		String fecha=null;
 		String hora=null;
-		String parquimetro=(String) parquimetros.getSelectedItem();
 		
 		try {
 		    conexion = tablaBD.getConnection();
@@ -291,7 +312,7 @@ public class VentanaInspector extends JFrame{
             	dia="vi";*/
             	hora=rs.getString(1);
             	fecha=rs.getString(2);
-            	turno=turno(rs.getInt(3));
+            	turno=turno(rs.getInt(3)); 
             	dia=dia(rs.getInt(4));
             	//System.out.println(hora+fecha+turno+dia);
             }
@@ -406,9 +427,6 @@ public class VentanaInspector extends JFrame{
 		
 		String[] nombresColumnas = {"N° de multa","Fecha","Hora","Calle","Altura","Patente","Legajo inspector"};
 		DefaultTableModel model = new DefaultTableModel(nombresColumnas, 0);
-
-		
-		//String [][] multasCreadas;
 		
 		try {
 			conexion = tablaBD.getConnection();
@@ -475,120 +493,13 @@ public class VentanaInspector extends JFrame{
 		
 		return nuevo;
 	}
-
-	private String getPWDCifrada(String pwd){
-
-		String toReturn=null;
-
-		try {
-			//	Statement para obtener la password cifrada con md5 de mysql
-			Statement stmtMD5 = conexion.createStatement();
-			String md5SQL = "SELECT md5('" + pwd + "') as password_cifrada";
-			ResultSet rsMD5 = stmtMD5.executeQuery(md5SQL);
-
-			rsMD5.next();
-			toReturn = rsMD5.getString("password_cifrada");
-			rsMD5.close();
-			stmtMD5.close();
-			//	Ya obtube la password cifrada (guardada en variable toReturn)
-		}
-		catch (SQLException ex) {ex.printStackTrace();}
-
-		return toReturn;
-	}
+	
+	
+	
 	
 	//   --------               OYENTES                    ---------     //   
 	
 	
-	
-	
-	protected class OyenteIngresar implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			
-			String legajoIngresado = textoLegajo.getText();
-			String pwd = textoContraseña.getText();;
-			boolean legajoValido=false;
-			boolean pwdValida=false;
-			String [] callesBD;
-			DefaultComboBoxModel<String> model;
-			
-			if( legajoIngresado.isEmpty()|| pwd.isEmpty() ) {
-				JOptionPane.showMessageDialog(null,"Por favor, complete ambos campos");
-				return;
-			}
-			
-			try {
-			    conexion = tablaBD.getConnection();
-			    String pwd_cifrada = getPWDCifrada(pwd);
-
-	            stmt = conexion.createStatement();
-	            sql = "SELECT legajo,password FROM inspectores";
-	            rs = stmt.executeQuery(sql);
-
-	            while(rs.next() && !legajoValido) {
-					if (rs.getString("legajo").equals(legajoIngresado)) {
-						legajoValido = true;
-						pwdValida = rs.getString("password").equals(pwd_cifrada);
-					}
-				}
-	            stmt.close();
-	            rs.close();
-			}
-			
-			catch (SQLException ex) {
-				System.out.println("SQLException: " + ex.getMessage());
-				System.out.println("SQLState: " + ex.getSQLState());
-				System.out.println("VendorError: " + ex.getErrorCode());
-			}
-			
-			if (!legajoValido) { //no hay ningun inspector con ese legajo
-				JOptionPane.showMessageDialog(null,"No se encontró ningun inspector con ese número de legajo, por favor compruebelo");
-				textoLegajo.setText("");
-				textoContraseña.setText("");
-				return;
-			}
-			
-			if (!pwdValida) { //esta mal la contraseña
-				JOptionPane.showMessageDialog(null,"La contraseña provista para ese número de legajo es incorrecta, por favor compruebela");
-				textoContraseña.setText("");
-				return;
-			}
-			
-			try {
-			    conexion = tablaBD.getConnection();
-			    stmt = conexion.createStatement();
-	            sql = "SELECT calle FROM parquimetros";
-	            rs = stmt.executeQuery(sql);
-	            
-	            callesBD = new String [99999];
-	            int index = 0;
-	            
-	            while(rs.next()) 
-	            	callesBD[index++]=rs.getString("calle");
-	            
-	            model = new DefaultComboBoxModel<String>(eliminarEspacios(index,callesBD));
-	            calles.setModel(model);
-	           
-	            stmt.close();
-	            rs.close();
-			}
-			
-			catch (SQLException ex) {
-				System.out.println("SQLException: " + ex.getMessage());
-				System.out.println("SQLState: " + ex.getSQLState());
-				System.out.println("VendorError: " + ex.getErrorCode());
-			}
-			
-			legajo=legajoIngresado;
-			calle=(String)calles.getSelectedItem();
-			actualizarAlturas();
-			actualizarParquimetros();
-			setContentPane(fondoIngresado);
-		    validate();
-			
-		}
-	}
 	
 	protected class OyenteAgregar implements ActionListener {
 
@@ -596,15 +507,35 @@ public class VentanaInspector extends JFrame{
 		public void actionPerformed(ActionEvent arg0) {
 			
 			String patente = textoPatente.getText().toUpperCase();
+			boolean patenteValida=false;
+			boolean estaAnotada=false;
+			int cantAnotadas=estacionados.getSize();
+			int i=0;
+			Iterator<String> iter=patentes.iterator();
 			
-			if(patente.isEmpty())
+			if(patente.isEmpty()) {
 				JOptionPane.showMessageDialog(null,"Por favor, ingrese una patente");
-			
-			else { 
-				estacionados.addElement(patente);
-				textoPatente.setText("");
+				return;
 			}
 			
+			while(i<cantAnotadas && !estaAnotada)
+				estaAnotada=estacionados.get(i++).equals(patente);
+			
+			if(estaAnotada) {
+				JOptionPane.showMessageDialog(null,"Esta patente ya fue ingresada");
+				textoPatente.setText("");
+				return;
+			}
+			
+			while(!patenteValida && iter.hasNext())
+				patenteValida=iter.next().equals(patente);
+			
+			if(patenteValida) 
+				estacionados.addElement(patente);
+			else 
+				JOptionPane.showMessageDialog(null,"La patente ingresa no está en la base de datos");
+			
+			textoPatente.setText("");
 			checkFinalizable();
 			
 		}

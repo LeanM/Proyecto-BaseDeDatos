@@ -35,7 +35,7 @@ public class LogIn extends Component {
      * @param password
      */
 
-    public void conectarBD(String user, String password){
+    public DBTable conectarBD(String user, String password){
         if (this.conexionBD == null)
         {   //Intenta conectar con la base de datos utilizando DBTable
             try
@@ -48,7 +48,6 @@ public class LogIn extends Component {
 
                 conexionBD = new DBTable();
                 this.conexionBD.connectDatabase(driver,uriConexion,user,password); // Conecta con la base de datos
-                ventanaSelect = new VentanaSelect(user,conexionBD); // Se selecciona la ventana a inicializar si la conexion se realizo correctamente
             }
             catch (SQLException ex)
             {   // No se pudo conectar de forma correcta a la base de datos
@@ -62,10 +61,10 @@ public class LogIn extends Component {
                 conexionBD = null;
             }
             catch (ClassNotFoundException ex) {ex.printStackTrace();}
+            
         }
-
-
-
+        
+        return conexionBD;
     }
 
     /**
@@ -88,13 +87,9 @@ public class LogIn extends Component {
             }
         }
     }
-
-
-    public boolean conexionEstablecida(){
-        return this.conexionBD != null;
-    }
-
-
-
+    
+   /* private void ventanaSelect(String user) {
+    	ventanaSelect = new VentanaSelect(user,conexionBD); // Se selecciona la ventana a inicializar si la conexion se realizo correctamente
+    }*/
 
 }
