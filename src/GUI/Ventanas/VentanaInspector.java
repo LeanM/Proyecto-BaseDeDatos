@@ -533,7 +533,7 @@ public class VentanaInspector extends JFrame{
 			if(patenteValida) 
 				estacionados.addElement(patente);
 			else 
-				JOptionPane.showMessageDialog(null,"La patente ingresa no está en la base de datos");
+				JOptionPane.showMessageDialog(null,"La patente ingresada no está en la base de datos");
 			
 			textoPatente.setText("");
 			checkFinalizable();
