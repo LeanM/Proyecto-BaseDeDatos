@@ -123,8 +123,19 @@ public class VentanaAdmin extends JFrame {
         try {
 
             // se ejecuta la sentencia
-            tabla.setSelectSql(textoConsultas.getText().trim());
-            tabla.createColumnModelFromQuery();
+            //tabla.setSelectSql(textoConsultas.getText().trim());
+            //tabla.createColumnModelFromQuery();
+        	
+        	Statement stmt = tabla.getConnection().createStatement();
+        	String sql = textoConsultas.getText().trim();
+        	textoConsultas.setText("");
+        	
+        	if(stmt.execute(sql)) // Si era una consulta
+        		tabla.refresh(stmt.getResultSet());
+        	else JOptionPane.showMessageDialog(null,"Se actualizó la base de datos");  // Si era una alta, baja o modificacion
+        	
+        	stmt.close();
+        	
 
             for (int i = 0; i < tabla.getColumnCount(); i++)
             { // para que muestre correctamente los valores de tipo TIME (hora)
@@ -139,7 +150,7 @@ public class VentanaAdmin extends JFrame {
                 }
             }
 
-            tabla.refresh();
+            //tabla.refresh();
 
         } catch (SQLException ex) {
             // en caso de error, se muestra la causa en la consola
