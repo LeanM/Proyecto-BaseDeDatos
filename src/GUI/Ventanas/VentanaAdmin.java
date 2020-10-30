@@ -93,11 +93,13 @@ public class VentanaAdmin extends JFrame {
         listaTablas.addListSelectionListener(new ListSelectionListener() {
 
             public void valueChanged(ListSelectionEvent e) {
-                int indice = listaTablas.getSelectedIndex();
-                String nombreTabla = model_Lista_Tablas.getElementAt(indice);
+            	if(listaTablas.getModel().getSize()!=0) {
+            		int indice = listaTablas.getSelectedIndex();
+            		String nombreTabla = model_Lista_Tablas.getElementAt(indice);
 
-                model_Lista_Atrubutos_Tabla.removeAllElements();
-                mostrarArributosTabla(nombreTabla);
+            		model_Lista_Atrubutos_Tabla.removeAllElements();
+            		mostrarArributosTabla(nombreTabla);
+            	}
             }
         });
 
@@ -132,7 +134,12 @@ public class VentanaAdmin extends JFrame {
         	
         	if(stmt.execute(sql)) // Si era una consulta
         		tabla.refresh(stmt.getResultSet());
-        	else JOptionPane.showMessageDialog(null,"Se actualizó la base de datos");  // Si era una alta, baja o modificacion
+        	else {
+        		mostrarTablasBD();  // En caso de que se haya añadido o eliminado una tabla de la BD
+        		model_Lista_Atrubutos_Tabla.removeAllElements(); // En caso de que se este mostrando los atributos de una tabla modificada
+        		tabla.removeAllRows();// En caso de que se este mostrando una consulta sobre de una tabla modificada
+        		JOptionPane.showMessageDialog(null,"Se actualizó la base de datos");  // Si era una alta, baja o modificacion
+        	}
         	
         	stmt.close();
         	
@@ -167,6 +174,7 @@ public class VentanaAdmin extends JFrame {
 
         try
         {
+        	model_Lista_Tablas.removeAllElements();
             Connection conexion = tabla.getConnection();
             Statement stmt = conexion.createStatement();
             String sql = "SHOW TABLES";
