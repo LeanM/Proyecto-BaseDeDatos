@@ -16,13 +16,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import LogIn.LogIn;
 import quick.dbtable.DBTable;
 
+@SuppressWarnings("serial")
 public class VentanaInspector extends JFrame{
 	
-	protected static final long serialVersionUID = 1L;
-	
 	protected JPanel fondo;
+	
+	protected JButton volverInicio;
+	protected ActionListener oyenteVolverInicio;
 	 
 	protected JButton agregar;
 	protected ActionListener oyenteAgregar;
@@ -34,6 +37,11 @@ public class VentanaInspector extends JFrame{
 	protected ActionListener oyenteFCP;
 	
 	protected JTextField textoPatente;
+	
+	protected JLabel labelPatentes;
+	protected JLabel labelCalles;
+	protected JLabel labelAlturas;
+	protected JLabel labelParquimetros;
 	 
 	protected JComboBox <String> calles;
 	protected ActionListener oyenteCalles;
@@ -99,8 +107,16 @@ public class VentanaInspector extends JFrame{
 	     fondo.add(listaE);
 	     
 	     textoPatente = new JTextField();
-	     textoPatente.setBounds(800,50,400,30);
+	     textoPatente.setBounds(175,125,250,30);
 	     fondo.add(textoPatente);
+	     
+	     labelPatentes = new JLabel("Patente a ingresar:");
+	     labelPatentes.setBounds(50, 130, 125, 20);
+	     fondo.add(labelPatentes);
+	     
+	     volverInicio=LogIn.newVolverInicio();
+	     volverInicio.setBounds(900,50,200,50);
+	     fondo.add(volverInicio);
 	     
 	     agregar = new JButton("Agregar patente");
 	     agregar.setBounds(50,50,200,50);
@@ -136,6 +152,18 @@ public class VentanaInspector extends JFrame{
 	     parquimetros.setSelectedIndex(-1);
 	     parquimetros.setBounds(900,450,200,50);
 	     fondo.add(parquimetros);
+	     
+	     labelCalles = new JLabel("Calle:");
+	     labelCalles.setBounds(800, 260, 75, 20);
+	     fondo.add(labelCalles);
+	     
+	     labelAlturas = new JLabel("Altura:");
+	     labelAlturas.setBounds(800, 360, 75, 20);
+	     fondo.add(labelAlturas);
+	     
+	     labelParquimetros = new JLabel("Parquimetro:");
+	     labelParquimetros.setBounds(800, 460, 100, 20);
+	     fondo.add(labelParquimetros);
 	     
 	     finalizarCargaPatentes = new JButton("Finalizar Carga");
 	     finalizarCargaPatentes.setBounds(900,650,200,50);
@@ -197,7 +225,7 @@ public class VentanaInspector extends JFrame{
 		try {
 		    conexion = tablaBD.getConnection();
 		    stmt = conexion.createStatement();
-            sql = "SELECT calle FROM parquimetros";
+            sql = "SELECT DISTINCT calle FROM parquimetros";
             rs = stmt.executeQuery(sql);
             
             String [] callesBD = new String [99999]; // Lo hago de esta forma porque no encontre como obtener el tamaño del resultset
@@ -255,6 +283,7 @@ public class VentanaInspector extends JFrame{
 		}
 		
 		altura=(String)alturas.getSelectedItem();
+
 		checkFinalizable();
 	}
 	
@@ -576,6 +605,7 @@ protected class OyenteAlturas implements ActionListener {
 
 		
 		public void actionPerformed(ActionEvent e) {
+			altura=(String)alturas.getSelectedItem();
 			actualizarParquimetros();
 		}
 		

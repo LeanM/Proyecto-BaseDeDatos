@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Ventanas;
 
 import LogIn.LogIn;
 import quick.dbtable.DBTable;
@@ -6,18 +6,16 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import GUI.Ventanas.VentanaAdmin;
-import GUI.Ventanas.VentanaInspector;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 
+@SuppressWarnings("serial")
 public class MenuLogIn extends JFrame{
 
-    private static MenuLogIn instance=null;
+    //private static MenuLogIn instance=null;
     private JButton Iniciar_Sesion;
+    private JButton botonVolver;
     private JButton Inspector;
     private JButton Admin;
     private JTextField legajo,password;
@@ -31,17 +29,18 @@ public class MenuLogIn extends JFrame{
     String sql;
     ResultSet rs;
 
+    /*
     /**
      * Metodo que devuelve el menu ya que es unico en el juego.
      * Si este no esta creado lo crea sino devuelve el creado
      * @return Menu creado o existente
-     */
+     
     public static MenuLogIn getMenu(){
         if(instance==null){
             instance = new MenuLogIn();
         }
         return instance;
-    }
+    }*/
 
     /**
      * Constructor de menu login que inicializa la ventana de login para
@@ -49,7 +48,8 @@ public class MenuLogIn extends JFrame{
      * usuario y contraseña.
      *
      */
-    private MenuLogIn(){
+    public MenuLogIn(){
+    	
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(600, 300, 800, 500);
@@ -70,6 +70,11 @@ public class MenuLogIn extends JFrame{
         
         Admin =new JButton("Ingresar como Administrador");
         Admin.setBounds(533-125,250-15,230,30);
+        
+        botonVolver =new JButton("Volver");
+        botonVolver.setBounds(330,300,120,30);
+        botonVolver.setVisible(false);
+        botonVolver.setEnabled(false);
 
         legajo = new JTextField();
         legajo.setBounds(350,100,100,20);
@@ -98,6 +103,7 @@ public class MenuLogIn extends JFrame{
         contentPane.add(password);
         contentPane.add(legajo);
         contentPane.add(Iniciar_Sesion);
+        contentPane.add(botonVolver);
 
         Iniciar_Sesion.addActionListener(new ActionListener() {
 
@@ -153,13 +159,11 @@ public class MenuLogIn extends JFrame{
             				return;
             			}
                 	}
-                		
-                    //  Elimina la ventana MenuLogin y crea la nueva ventana
-                    MenuLogIn.getMenu().setVisible(false);
-                    instance = null;
-                    if(admin)
-                    	new VentanaAdmin(tabla);
-                    else new VentanaInspector(tabla,legajo.getText());
+                	
+                	if(admin)
+                		LogIn.getLogIn().ingresoAdmin();
+                	else LogIn.getLogIn().ingresoInpector(legajo.getText());
+                 
                 }
                 else {
                     legajo.setText("");
@@ -186,6 +190,14 @@ public class MenuLogIn extends JFrame{
 			}
         	
         });
+        
+        botonVolver.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				volver();
+			}
+        	
+        });
 
         this.repaint();
     }
@@ -201,12 +213,40 @@ public class MenuLogIn extends JFrame{
 		password.setVisible(true);
 		password.setEnabled(true);
 		passwordTexto.setVisible(true);
+		
 		Iniciar_Sesion.setVisible(true);
 		Iniciar_Sesion.setEnabled(true);
+		
 		Inspector.setVisible(false);
 		Inspector.setEnabled(false);
+		
 		Admin.setVisible(false);
 		Admin.setEnabled(false);
+		
+		botonVolver.setVisible(true);
+		botonVolver.setEnabled(true);
+    }
+    
+    private void volver() {
+    	legajo.setVisible(false);
+		legajo.setEnabled(false);
+		legajoTexto.setVisible(false);
+		
+    	password.setVisible(false);
+		password.setEnabled(false);
+		passwordTexto.setVisible(false);
+		
+		Iniciar_Sesion.setVisible(false);
+		Iniciar_Sesion.setEnabled(false);
+		
+		Inspector.setVisible(true);
+		Inspector.setEnabled(true);
+		
+		Admin.setVisible(true);
+		Admin.setEnabled(true);
+		
+		botonVolver.setVisible(false);
+		botonVolver.setEnabled(false);
     }
     
     private String getPWDCifrada(String pwd){

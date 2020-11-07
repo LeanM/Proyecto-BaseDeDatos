@@ -1,23 +1,27 @@
 package LogIn;
 
-import GUI.VentanaSelect;
+import GUI.Ventanas.MenuLogIn;
+import GUI.Ventanas.VentanaAdmin;
+import GUI.Ventanas.VentanaInspector;
 import quick.dbtable.*;
-import sun.rmi.runtime.Log;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 
 
+@SuppressWarnings("serial")
 public class LogIn extends Component {
 
-    private DBTable conexionBD = null;
-    private VentanaSelect ventanaSelect;
+    private static DBTable conexionBD = null;
+    private static JFrame ventanaActual;
 
     public static LogIn instance = null;
 
     private LogIn(){
+    	ventanaActual = new MenuLogIn();
     }
 
     public static LogIn getLogIn(){
@@ -36,7 +40,7 @@ public class LogIn extends Component {
      */
 
     public DBTable conectarBD(String user, String password){
-        if (this.conexionBD == null)
+        if (conexionBD == null)
         {   //Intenta conectar con la base de datos utilizando DBTable
             try
             {
@@ -47,7 +51,7 @@ public class LogIn extends Component {
                         baseDatos + "?serverTimezone=America/Argentina/Buenos_Aires";
 
                 conexionBD = new DBTable();
-                this.conexionBD.connectDatabase(driver,uriConexion,user,password); // Conecta con la base de datos
+                conexionBD.connectDatabase(driver,uriConexion,user,password); // Conecta con la base de datos
             }
             catch (SQLException ex)
             {   // No se pudo conectar de forma correcta a la base de datos
@@ -70,14 +74,14 @@ public class LogIn extends Component {
     /**
      *  Metodo encargado de desconectarse de la base de datos.
      */
-    private void desconectarBD()
+    private static void desconectarBD()
     {
-        if (this.conexionBD != null)
+        if (conexionBD != null)
         {
             try
             {
-                this.conexionBD.close();
-                this.conexionBD = null;
+                conexionBD.close();
+                conexionBD = null;
             }
             catch (SQLException ex)
             {
@@ -88,8 +92,30 @@ public class LogIn extends Component {
         }
     }
     
-   /* private void ventanaSelect(String user) {
-    	ventanaSelect = new VentanaSelect(user,conexionBD); // Se selecciona la ventana a inicializar si la conexion se realizo correctamente
-    }*/
+    public static JButton newVolverInicio() {
+    	
+    	JButton volverInicio = new JButton("Regresar al inicio");
+	    volverInicio.setBackground(Color.DARK_GRAY);
+	    volverInicio.setForeground(Color.WHITE);
+	    volverInicio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ventanaActual.dispose();
+				desconectarBD();
+				ventanaActual=new MenuLogIn();
+			}
+	    });
+	   
+    	return volverInicio;
+    }
+    
+    public void ingresoAdmin() {
+    	ventanaActual.dispose();
+    	ventanaActual=new VentanaAdmin(conexionBD); // ya se verifico que la conexion no sea nula
+    }
+    
+   public void ingresoInpector(String legajo) {
+	   ventanaActual.dispose();
+	   ventanaActual=new VentanaInspector(conexionBD,legajo);  // ya se verifico que la conexion no sea nula
+   }
 
 }

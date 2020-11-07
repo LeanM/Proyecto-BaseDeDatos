@@ -234,6 +234,8 @@ CREATE VIEW estacionados AS
 
 GRANT SELECT ON parquimetros.inspectores TO 'inspector'@'%';    #validar numero de legajo y password de un inspector
 GRANT SELECT ON parquimetros.estacionados TO 'inspector'@'%';
+GRANT SELECT ON parquimetros.multa TO 'inspector'@'%';    # recuperar multas hechas
+GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%';    #recuperar patentes validas
 GRANT INSERT ON parquimetros.multa TO 'inspector'@'%';  #Cargar multas
 GRANT INSERT ON parquimetros.accede TO 'inspector'@'%';         #Registrar accesos a parquimetros
 GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # OBtener parquimetro

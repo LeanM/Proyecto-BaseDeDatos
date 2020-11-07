@@ -9,6 +9,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import LogIn.LogIn;
+
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,8 +24,9 @@ public class VentanaAdmin extends JFrame {
     private JTextArea textoConsultas;
     private JScrollPane scroll_texto_Consulta;
     private JButton realizarConsulta;
+    private JButton volverInicio;
     private JLabel etiquetaTablas;
-    private JList listaTablas,listaAtributosTabla;
+    private JList<String> listaTablas,listaAtributosTabla;
     private DefaultListModel<String> model_Lista_Tablas,model_Lista_Atrubutos_Tabla;
     private DBTable tabla;
 
@@ -58,9 +62,14 @@ public class VentanaAdmin extends JFrame {
         scroll_texto_Consulta.setBounds(30,5,1100,150);
 
         realizarConsulta = new JButton("Consultar");
-        realizarConsulta.setBounds(1150,30,150,50);
+        realizarConsulta.setBounds(1150,10,150,50);
         realizarConsulta.setBackground(Color.DARK_GRAY);
         realizarConsulta.setForeground(Color.WHITE);
+        
+        volverInicio=LogIn.newVolverInicio();
+        volverInicio.setBounds(1150,70,150,50);
+        volverInicio.setBackground(Color.DARK_GRAY);
+        volverInicio.setForeground(Color.WHITE);
 
         realizarConsulta.addActionListener(new ActionListener() {
 
@@ -74,7 +83,7 @@ public class VentanaAdmin extends JFrame {
         etiquetaTablas.setBounds(1100,200,200,20);
         etiquetaTablas.setForeground(Color.WHITE);
 
-        listaAtributosTabla = new JList();
+        listaAtributosTabla = new JList<String>();
         listaAtributosTabla.setBounds(1120, 465, 150, 200);
         listaAtributosTabla.setBackground(Color.lightGray);
         listaAtributosTabla.setBorder(compuesto);
@@ -82,7 +91,7 @@ public class VentanaAdmin extends JFrame {
         model_Lista_Atrubutos_Tabla = new DefaultListModel<String>();
         listaAtributosTabla.setModel(model_Lista_Atrubutos_Tabla);
 
-        listaTablas = new JList();
+        listaTablas = new JList<String>();
         listaTablas.setBounds(1100, 225, 200, 225);
         listaTablas.setBackground(Color.lightGray);
         listaTablas.setBorder(compuesto);
@@ -112,6 +121,7 @@ public class VentanaAdmin extends JFrame {
         contentPane.add(etiquetaTablas);
         contentPane.add(scroll_texto_Consulta);
         contentPane.add(realizarConsulta);
+        contentPane.add(volverInicio);
         contentPane.add(tabla);
         contentPane.add(listaTablas);
         contentPane.add(listaAtributosTabla);

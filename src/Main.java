@@ -1,11 +1,8 @@
-import GUI.MenuLogIn;
+import LogIn.LogIn;
 
 public class Main {
 
-
-    private static MenuLogIn login;
-
     public static void main (String [] ags){
-        login = MenuLogIn.getMenu(); // Ejecuta el constructor de la clase MenuLogIn la cual inicializa la GUI para iniciar sesion.
+        LogIn.getLogIn(); // Ejecuta el constructor de la clase LogIn la cual inicializa la GUI para iniciar sesion.
     }
 }
