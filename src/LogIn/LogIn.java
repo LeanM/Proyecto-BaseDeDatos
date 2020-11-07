@@ -74,7 +74,7 @@ public class LogIn extends Component {
     /**
      *  Metodo encargado de desconectarse de la base de datos.
      */
-    private static void desconectarBD()
+    public static void desconectarBD()
     {
         if (conexionBD != null)
         {

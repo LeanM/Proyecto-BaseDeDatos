@@ -247,6 +247,8 @@ public class MenuLogIn extends JFrame{
 		
 		botonVolver.setVisible(false);
 		botonVolver.setEnabled(false);
+		
+		LogIn.desconectarBD();
     }
     
     private String getPWDCifrada(String pwd){
