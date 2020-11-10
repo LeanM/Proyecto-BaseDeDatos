@@ -258,7 +258,7 @@ public class VentanaInspector extends JFrame{
 		try {
 		    conexion = tablaBD.getConnection();
 		    stmt = conexion.createStatement();
-            sql = "SELECT altura FROM parquimetros WHERE calle='"+calle+"'";
+            sql = "SELECT DISTINCT altura FROM parquimetros WHERE calle='"+calle+"'";
             rs = stmt.executeQuery(sql);
             
             String [] alturasBD = new String [99999];
@@ -480,6 +480,7 @@ public class VentanaInspector extends JFrame{
 		
 		
 		for(int i=0;i<cantAnotados;i++) {
+			estaEnInfraccion=true;
 			int j=0;
 			patenteActual=listaE.getModel().getElementAt(i);
 			
