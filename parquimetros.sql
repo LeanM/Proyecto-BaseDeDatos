@@ -53,7 +53,7 @@ CREATE TABLE tipos_tarjeta(
 
 CREATE TABLE tarjetas(
     id_tarjeta INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    saldo DECIMAL(5,2) NOT NULL, # Tres digitos enteros y dos decimales
+    saldo DECIMAL(5,2) UNIQUE NOT NULL, # Tres digitos enteros y dos decimales
     tipo VARCHAR(45) NOT NULL,
     patente VARCHAR(6) NOT NULL,
 
@@ -118,10 +118,14 @@ CREATE TABLE ventas(
     hora TIME NOT NULL,
 
     CONSTRAINT pk_ventas
-    PRIMARY KEY (fecha,hora),
+    PRIMARY KEY (fecha,hora,id_tarjeta),
 
     CONSTRAINT FK_ventas_tarjetas
-    FOREIGN KEY (id_tarjeta,tipo_tarjeta,saldo) REFERENCES tarjetas(id_tarjeta,tipo,saldo)
+    FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+
+    CONSTRAINT FK_ventas_tipos_tarjeta
+    FOREIGN KEY (tipo_tarjeta) REFERENCES tipos_tarjeta(tipo)
         ON DELETE RESTRICT ON UPDATE CASCADE
 
 ) ENGINE=InnoDB;
@@ -343,7 +347,7 @@ GRANT SELECT ON parquimetros.estacionados TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.multa TO 'inspector'@'%';  #Cargar multas
 GRANT SELECT ON parquimetros.multa TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.accede TO 'inspector'@'%';         #Registrar accesos a parquimetros
-GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # Obtener parquimetro
+GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # OBtener parquimetro
 GRANT SELECT ON parquimetros.asociado_con TO 'inspector'@'%'; #recuperar el campo id_asociado_con y poder cargar una multa
 GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%'; # Obtener las patentes cargadas en la base de datos
 
@@ -352,5 +356,3 @@ GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%'; # Obtener las paten
 CREATE USER 'parquimetro'@'%' IDENTIFIED BY 'parq';
 
 GRANT EXECUTE ON PROCEDURE parquimetros.conectar TO 'parquimetro'@'%';
-GRANT SELECT ON parquimetros.parquimetros TO 'parquimetro'@'%'; # Obtener parquimetros
-GRANT SELECT ON parquimetros.tarjetas TO 'parquimetro'@'%'; # Obtener tarjetas
