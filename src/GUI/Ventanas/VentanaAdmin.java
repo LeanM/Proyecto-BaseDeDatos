@@ -40,7 +40,7 @@ public class VentanaAdmin extends JFrame {
         setVisible(true);
         getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(200, 50, 1360, 768);
+        setBounds(0, 0, 1360, 768);
         setResizable(false);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

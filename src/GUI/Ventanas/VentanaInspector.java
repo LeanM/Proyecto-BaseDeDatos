@@ -20,9 +20,9 @@ import LogIn.LogIn;
 import quick.dbtable.DBTable;
 
 @SuppressWarnings("serial")
-public class VentanaInspector extends JFrame{
+public class VentanaInspector extends VentanaConUbicaciones{
 	
-	protected JPanel fondo;
+	//protected JPanel fondo;
 	
 	protected JButton volverInicio;
 	protected ActionListener oyenteVolverInicio;
@@ -39,7 +39,7 @@ public class VentanaInspector extends JFrame{
 	protected JTextField textoPatente;
 	
 	protected JLabel labelPatentes;
-	protected JLabel labelCalles;
+	/*protected JLabel labelCalles;
 	protected JLabel labelAlturas;
 	protected JLabel labelParquimetros;
 	 
@@ -47,40 +47,41 @@ public class VentanaInspector extends JFrame{
 	protected ActionListener oyenteCalles;
 	protected JComboBox <String> alturas;
 	protected ActionListener oyenteAlturas;
-	protected JComboBox <String> parquimetros;
+	protected JComboBox <String> parquimetros;*/
 	 
 	protected DefaultListModel <String> estacionados;
 	protected JList<String> listaE;
 	protected List<String> patentes;
 	
-	protected DBTable tablaBD;
+	//protected DBTable tablaBD;
 	
 	protected String legajo;
-	protected String calle;
-	protected String altura;
-	//protected String parquimetro;  Me parece que es mejor no tener esta variable global asi no hay que hacer un oyente para parquimetros, y ahi actualizar el parquimetro elegido
+	//protected String calle;
+	/*protected String altura;
+	protected String parquimetro;  Me parece que es mejor no tener esta variable global asi no hay que hacer un oyente para parquimetros, y ahi actualizar el parquimetro elegido
  	
 	Connection conexion;
     Statement stmt;
     String sql;
-    ResultSet rs;
+    ResultSet rs;*/
 	
 	 
 	public VentanaInspector(DBTable tabla,String legajo) {
 		
-		setVisible(true);
+		super(tabla);
+		
+		/*setVisible(true);
         getContentPane().setLayout(null);
       	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(200, 50, 1360, 768);
-        setResizable(false);
+        setResizable(false);*/
 		
-		tablaBD=tabla;
 		this.legajo=legajo; 
 		
 		crearFondo();
 		 
-		setContentPane(fondo);
-	    validate();
+		/*setContentPane(fondo);
+	    validate();*/
 		 
 	 }
 
@@ -88,10 +89,10 @@ public class VentanaInspector extends JFrame{
 	
 	protected void crearFondo() {  // Crea el panel 
 		
-	     fondo = new JPanel();
+	     /*fondo = new JPanel();
 	     fondo.setBorder(new EmptyBorder(5, 5, 5, 5));
 	     fondo.setBackground(Color.LIGHT_GRAY);
-	     fondo.setLayout(null);
+	     fondo.setLayout(null);*/
 
 		 //Creo bordes
 		 Border raisedbevel = BorderFactory.createRaisedBevelBorder();
@@ -114,9 +115,9 @@ public class VentanaInspector extends JFrame{
 	     labelPatentes.setBounds(50, 130, 125, 20);
 	     fondo.add(labelPatentes);
 	     
-	     volverInicio=LogIn.newVolverInicio();
+	     /*volverInicio=LogIn.newVolverInicio();
 	     volverInicio.setBounds(900,50,200,50);
-	     fondo.add(volverInicio);
+	     fondo.add(volverInicio);*/
 	     
 	     agregar = new JButton("Agregar patente");
 	     agregar.setBounds(50,50,200,50);
@@ -134,7 +135,7 @@ public class VentanaInspector extends JFrame{
 	     eliminar.addActionListener(oyenteEliminar);
 	     fondo.add(eliminar);
 	     
-	     calles = new JComboBox<String>();  //hay que cargar las ubicaciones como strings desde la bd
+	     /*calles = new JComboBox<String>();  //hay que cargar las ubicaciones como strings desde la bd
 	     calles.setSelectedIndex(-1);
 	     calles.setBounds(900,250,200,50);
 	     oyenteCalles = new OyenteCalles();
@@ -163,7 +164,7 @@ public class VentanaInspector extends JFrame{
 	     
 	     labelParquimetros = new JLabel("Parquimetro:");
 	     labelParquimetros.setBounds(800, 460, 100, 20);
-	     fondo.add(labelParquimetros);
+	     fondo.add(labelParquimetros);*/
 	     
 	     finalizarCargaPatentes = new JButton("Finalizar Carga");
 	     finalizarCargaPatentes.setBounds(900,650,200,50);
@@ -175,9 +176,9 @@ public class VentanaInspector extends JFrame{
 	     fondo.add(finalizarCargaPatentes);
 	     
 	     cargarPatentes();
-	     actualizarCalles();
+	     /*actualizarCalles();
 	     actualizarAlturas();
-	     actualizarParquimetros();
+	     actualizarParquimetros();*/
 	     
 	}
 	
@@ -220,7 +221,7 @@ public class VentanaInspector extends JFrame{
 		
 	}
 	
-	protected void actualizarCalles() {
+	/*protected void actualizarCalles() {
 
 		try {
 		    conexion = tablaBD.getConnection();
@@ -318,7 +319,7 @@ public class VentanaInspector extends JFrame{
 		
 		//parquimetro=(String)parquimetros.getSelectedItem();
 		checkFinalizable();
-	}
+	}*/
 	
 	protected String[] habilitado() {
 	
@@ -514,7 +515,7 @@ public class VentanaInspector extends JFrame{
 		return model;
 	}
 	
-	protected String [] eliminarEspacios (int cant,String original []) {
+	/*protected String [] eliminarEspacios (int cant,String original []) {
 		
 		String nuevo [] = new String [cant];
 		
@@ -522,7 +523,7 @@ public class VentanaInspector extends JFrame{
 			nuevo[i]=original[i];
 		
 		return nuevo;
-	}
+	}*/
 	
 	
 	
@@ -591,7 +592,7 @@ public class VentanaInspector extends JFrame{
 		
 	}
 	
-	protected class OyenteCalles implements ActionListener {
+	/*protected class OyenteCalles implements ActionListener {
 
 		
 		public void actionPerformed(ActionEvent e) {
@@ -602,7 +603,7 @@ public class VentanaInspector extends JFrame{
 		
 	}
 	
-protected class OyenteAlturas implements ActionListener {
+	protected class OyenteAlturas implements ActionListener {
 
 		
 		public void actionPerformed(ActionEvent e) {
@@ -610,7 +611,7 @@ protected class OyenteAlturas implements ActionListener {
 			actualizarParquimetros();
 		}
 		
-	}
+	}*/
 	
 	protected class OyenteFCP implements ActionListener {
 

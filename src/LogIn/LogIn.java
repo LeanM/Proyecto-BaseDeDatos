@@ -2,6 +2,7 @@ package LogIn;
 
 import GUI.Ventanas.MenuLogIn;
 import GUI.Ventanas.VentanaAdmin;
+import GUI.Ventanas.VentanaConexionParquimetro;
 import GUI.Ventanas.VentanaInspector;
 import quick.dbtable.*;
 import javax.swing.*;
@@ -116,6 +117,11 @@ public class LogIn extends Component {
    public void ingresoInpector(String legajo) {
 	   ventanaActual.dispose();
 	   ventanaActual=new VentanaInspector(conexionBD,legajo);  // ya se verifico que la conexion no sea nula
+   }
+   
+   public void ingresoCDP() {
+	   ventanaActual.dispose();
+	   ventanaActual=new VentanaConexionParquimetro(conexionBD);  // ya se verifico que la conexion no sea nula
    }
 
 }

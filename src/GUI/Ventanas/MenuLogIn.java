@@ -18,6 +18,7 @@ public class MenuLogIn extends JFrame{
     private JButton botonVolver;
     private JButton Inspector;
     private JButton Admin;
+    private JButton ConexionP;
     private JTextField legajo,password;
     private JLabel legajoTexto,passwordTexto;
     private JPanel contentPane;
@@ -52,7 +53,7 @@ public class MenuLogIn extends JFrame{
     	
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(600, 300, 800, 500);
+        setBounds(284, 134, 800, 500);
         setResizable(false);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -66,10 +67,13 @@ public class MenuLogIn extends JFrame{
         Iniciar_Sesion.setEnabled(false);
         
         Inspector = new JButton("Ingresar como Inspector");
-        Inspector.setBounds(266-125,250-15,250,30);
+        Inspector.setBounds(400-150,125-15,300,30);
         
         Admin =new JButton("Ingresar como Administrador");
-        Admin.setBounds(533-125,250-15,230,30);
+        Admin.setBounds(400-150,250-15,300,30);
+        
+        ConexionP =new JButton("Conexion/Desconexion de parquimetro");
+        ConexionP.setBounds(400-150,375-15,300,30);
         
         botonVolver =new JButton("Volver");
         botonVolver.setBounds(330,300,120,30);
@@ -99,6 +103,7 @@ public class MenuLogIn extends JFrame{
         contentPane.add(passwordTexto);
         contentPane.add(Inspector);
         contentPane.add(Admin);
+        contentPane.add(ConexionP);
         contentPane.add(legajoTexto);
         contentPane.add(password);
         contentPane.add(legajo);
@@ -191,6 +196,17 @@ public class MenuLogIn extends JFrame{
         	
         });
         
+        ConexionP.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				/*LogIn.getLogIn().conectarBD("parquimetro", "parq");
+				LogIn.getLogIn().ingresoCDP();*/
+				LogIn.getLogIn().conectarBD("admin","admin");
+				LogIn.getLogIn().ingresoCDP();
+			}
+        	
+        });
+        
         botonVolver.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -223,6 +239,9 @@ public class MenuLogIn extends JFrame{
 		Admin.setVisible(false);
 		Admin.setEnabled(false);
 		
+		ConexionP.setVisible(false);
+		ConexionP.setEnabled(false);
+		
 		botonVolver.setVisible(true);
 		botonVolver.setEnabled(true);
     }
@@ -244,6 +263,9 @@ public class MenuLogIn extends JFrame{
 		
 		Admin.setVisible(true);
 		Admin.setEnabled(true);
+		
+		ConexionP.setVisible(true);
+		ConexionP.setEnabled(true);
 		
 		botonVolver.setVisible(false);
 		botonVolver.setEnabled(false);
