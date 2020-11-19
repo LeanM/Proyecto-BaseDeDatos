@@ -343,7 +343,7 @@ GRANT SELECT ON parquimetros.estacionados TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.multa TO 'inspector'@'%';  #Cargar multas
 GRANT SELECT ON parquimetros.multa TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.accede TO 'inspector'@'%';         #Registrar accesos a parquimetros
-GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # OBtener parquimetro
+GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # Obtener parquimetro
 GRANT SELECT ON parquimetros.asociado_con TO 'inspector'@'%'; #recuperar el campo id_asociado_con y poder cargar una multa
 GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%'; # Obtener las patentes cargadas en la base de datos
 
@@ -352,3 +352,5 @@ GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%'; # Obtener las paten
 CREATE USER 'parquimetro'@'%' IDENTIFIED BY 'parq';
 
 GRANT EXECUTE ON PROCEDURE parquimetros.conectar TO 'parquimetro'@'%';
+GRANT SELECT ON parquimetros.parquimetros TO 'parquimetro'@'%'; # Obtener parquimetros
+GRANT SELECT ON parquimetros.tarjetas TO 'parquimetro'@'%'; # Obtener tarjetas

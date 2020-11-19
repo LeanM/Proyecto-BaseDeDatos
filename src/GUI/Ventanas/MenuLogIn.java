@@ -199,9 +199,7 @@ public class MenuLogIn extends JFrame{
         ConexionP.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				/*LogIn.getLogIn().conectarBD("parquimetro", "parq");
-				LogIn.getLogIn().ingresoCDP();*/
-				LogIn.getLogIn().conectarBD("admin","admin");
+				LogIn.getLogIn().conectarBD("parquimetro", "parq");
 				LogIn.getLogIn().ingresoCDP();
 			}
         	
