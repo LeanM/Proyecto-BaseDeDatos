@@ -118,10 +118,10 @@ CREATE TABLE ventas(
     hora TIME NOT NULL,
 
     CONSTRAINT pk_ventas
-    PRIMARY KEY (fecha,hora),
+    PRIMARY KEY (id_tarjeta,fecha,hora),
 
     CONSTRAINT FK_ventas_tarjetas
-    FOREIGN KEY (id_tarjeta,tipo_tarjeta,saldo) REFERENCES tarjetas(id_tarjeta,tipo,saldo)
+    FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
         ON DELETE RESTRICT ON UPDATE CASCADE
 
 ) ENGINE=InnoDB;
@@ -132,7 +132,7 @@ CREATE TRIGGER trigger_ventas
 AFTER INSERT ON tarjetas
 FOR EACH ROW
 BEGIN
-    INSERT INTO ventas VALUES (id_tarjeta,tipo,saldo,CURRENT_DATE(),CURRENT_TIME());
+    INSERT INTO ventas VALUES (new.id_tarjeta,new.tipo,new.saldo,CURDATE(),CURTIME());
 END; !
 delimiter ;
 
@@ -238,69 +238,78 @@ begin
     declare fecha_hora_entrada,fecha_hora_actual DATETIME;
     declare tiempo INTEGER;
     declare descuento DECIMAL(3,2);
+	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		BEGIN # Si se produce una SQLEXCEPTION, se retrocede la transacción con ROLLBACK
+			SELECT 'SQLEXCEPTION!, transaccion abortada' AS resultado;
+			ROLLBACK;
+		END;
+		
+		
+	START TRANSACTION;
 
-    select t.id_tarjeta into id_tarjeta_AUX from estacionados natural join tarjetas t natural join parquimetros p where id_tarjeta = t.id_tarjeta and id_parq = p.id_parq;
+		select t.id_tarjeta into id_tarjeta_AUX from estacionados natural join tarjetas t natural join parquimetros p where id_tarjeta = t.id_tarjeta and id_parq = p.id_parq;
 
-    if id_tarjeta_AUX = id_tarjeta then
-        select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
-        select t.saldo into saldo from tarjetas t where id_tarjeta = t.id_tarjeta;
+		if id_tarjeta_AUX = id_tarjeta then
+			select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
+			select t.saldo into saldo from tarjetas t where id_tarjeta = t.id_tarjeta;
 
-        #   En estos creo que puede devolver mas de 1 tupla (seria un problema por el into)
-        select hora_ent into hora_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal=NULL and e.hora_sal = NULL;
-        select fecha_ent into fecha_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal=NULL and e.hora_sal = NULL;
+			#   En estos creo que puede devolver mas de 1 tupla (seria un problema por el into)
+			select hora_ent into hora_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal is NULL and e.hora_sal is NULL;
+			select fecha_ent into fecha_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal is NULL and e.hora_sal is NULL;
 
-        select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
+			select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
 
-        set fecha_actual = CURRENT_DATE();
-        set hora_actual = CURRENT_TIME();
+			set fecha_actual = CURRENT_DATE();
+			set hora_actual = CURRENT_TIME();
 
-        set fecha_hora_entrada = ADDTIME(CONVERT(fecha_entrada, DATETIME), hora_entrada);
-        set fecha_hora_actual = ADDTIME(CONVERT(fecha_actual, DATETIME), hora_actual);
+			set fecha_hora_entrada = ADDTIME(CONVERT(fecha_entrada, DATETIME), hora_entrada);
+			set fecha_hora_actual = ADDTIME(CONVERT(fecha_actual, DATETIME), hora_actual);
 
-        set tiempo = TIMESTAMPDIFF(MINUTE,fecha_hora_entrada,fecha_hora_actual);
-        set nuevo_saldo = saldo - (tiempo * tarifa * (1 - descuento));
+			set tiempo = TIMESTAMPDIFF(MINUTE,fecha_hora_entrada,fecha_hora_actual);
+			set nuevo_saldo = saldo - (tiempo * tarifa * (1 - descuento));
 
-        update tarjetas t
-        set saldo = nuevo_saldo where t.id_tarjeta = id_tarjeta;
+			update tarjetas t
+			set saldo = nuevo_saldo where t.id_tarjeta = id_tarjeta;
 
-        update estacionamientos e
-        set hora_sal = hora_actual, fecha_sal = fecha_actual where e.id_tarjeta = id_tarjeta;
+			update estacionamientos e
+			set hora_sal = hora_actual, fecha_sal = fecha_actual where e.id_tarjeta = id_tarjeta;
 
-        select 'cierre' as operacion, tiempo as tiempo_transcurrido_minutos, nuevo_saldo as saldo_actualizado;
+			select 'cierre' as operacion, tiempo as tiempo_transcurrido_minutos, nuevo_saldo as saldo_actualizado;
 
-    else
-        select id_tarjeta into id_tarjeta_AUX from tarjetas t where t.id_tarjeta = id_tarjeta;
-        select id_parq into id_parq_AUX from parquimetros p where p.id_parq = id_parq;
+		else
+			select id_tarjeta into id_tarjeta_AUX from tarjetas t where t.id_tarjeta = id_tarjeta;
+			select id_parq into id_parq_AUX from parquimetros p where p.id_parq = id_parq;
 
-        if id_tarjeta = id_tarjeta_AUX and id_parq = id_parq_AUX then
+			if id_tarjeta = id_tarjeta_AUX and id_parq = id_parq_AUX then
 
-            select t.saldo into saldo from tarjetas t where t.id_tarjeta = id_tarjeta;
-            select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
-            select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
+				select t.saldo into saldo from tarjetas t where t.id_tarjeta = id_tarjeta;
+				select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
+				select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
 
-            set tiempo = saldo / (tarifa * (1 - descuento));
+				set tiempo = saldo / (tarifa * (1 - descuento));
 
-            if saldo > 0 then
-                set fecha_actual = CURRENT_DATE();
-                set hora_actual = CURRENT_TIME();
+				if saldo > 0 then
+					set fecha_actual = CURRENT_DATE();
+					set hora_actual = CURRENT_TIME();
 
-                INSERT INTO estacionamientos values (id_tarjeta,id_parq,fecha_actual,hora_actual,NULL,NULL);
+					INSERT INTO estacionamientos values (id_tarjeta,id_parq,fecha_actual,hora_actual,NULL,NULL);
 
-                select 'apertura' as operacion, 'exitosa' as estado, tiempo as tiempo_disponible;
+					select 'apertura' as operacion, 'exitosa' as estado, tiempo as tiempo_disponible;
 
-            else
-                select 'apertura' as operacion, 'fallida (saldo menor o igual a 0)' as estado;
-            end if;
+				else
+					select 'apertura' as operacion, 'fallida (saldo menor o igual a 0)' as estado;
+				end if;
 
-        else
-            select 'Transaccion fallida (id_tarjera o id_parq no pertenecen a la B.D)' as estado_Operacion;
+			else
+				select 'Transaccion fallida (id_tarjera o id_parq no pertenecen a la B.D)' as estado_Operacion;
 
-        end if;
-
-
-    end if;
+			end if;
 
 
+		end if;
+
+	COMMIT;
 
 end; !
 delimiter ;
@@ -343,7 +352,7 @@ GRANT SELECT ON parquimetros.estacionados TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.multa TO 'inspector'@'%';  #Cargar multas
 GRANT SELECT ON parquimetros.multa TO 'inspector'@'%';
 GRANT INSERT ON parquimetros.accede TO 'inspector'@'%';         #Registrar accesos a parquimetros
-GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # Obtener parquimetro
+GRANT SELECT ON parquimetros.parquimetros TO 'inspector'@'%'; # OBtener parquimetro
 GRANT SELECT ON parquimetros.asociado_con TO 'inspector'@'%'; #recuperar el campo id_asociado_con y poder cargar una multa
 GRANT SELECT ON parquimetros.automoviles TO 'inspector'@'%'; # Obtener las patentes cargadas en la base de datos
 

@@ -96,8 +96,6 @@ public abstract class VentanaConUbicaciones extends JFrame {
 	    actualizarParquimetros();
 	    
 	    setContentPane(fondo);
-	    validate();
-	    
 	}
 	
 	protected void actualizarCalles() {

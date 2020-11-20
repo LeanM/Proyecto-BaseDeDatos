@@ -84,7 +84,7 @@ public class VentanaAdmin extends JFrame {
         etiquetaTablas.setForeground(Color.WHITE);
 
         listaAtributosTabla = new JList<String>();
-        listaAtributosTabla.setBounds(1120, 465, 150, 200);
+        listaAtributosTabla.setBounds(1120, 485, 150, 200);
         listaAtributosTabla.setBackground(Color.lightGray);
         listaAtributosTabla.setBorder(compuesto);
 
@@ -92,7 +92,7 @@ public class VentanaAdmin extends JFrame {
         listaAtributosTabla.setModel(model_Lista_Atrubutos_Tabla);
 
         listaTablas = new JList<String>();
-        listaTablas.setBounds(1100, 225, 200, 225);
+        listaTablas.setBounds(1100, 225, 200, 250);
         listaTablas.setBackground(Color.lightGray);
         listaTablas.setBorder(compuesto);
 

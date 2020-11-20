@@ -268,6 +268,9 @@ public class MenuLogIn extends JFrame{
 		botonVolver.setVisible(false);
 		botonVolver.setEnabled(false);
 		
+		password.setText("");
+		legajo.setText("");
+		
 		LogIn.desconectarBD();
     }
     
