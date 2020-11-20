@@ -53,7 +53,7 @@ CREATE TABLE tipos_tarjeta(
 
 CREATE TABLE tarjetas(
     id_tarjeta INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    saldo DECIMAL(5,2) NOT NULL, # Tres digitos enteros y dos decimales
+    saldo DECIMAL(5,2) UNIQUE NOT NULL, # Tres digitos enteros y dos decimales
     tipo VARCHAR(45) NOT NULL,
     patente VARCHAR(6) NOT NULL,
 
@@ -122,6 +122,15 @@ CREATE TABLE ventas(
 
     CONSTRAINT FK_ventas_tarjetas
     FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
+
+    PRIMARY KEY (fecha,hora,id_tarjeta),
+
+    CONSTRAINT FK_ventas_tarjetas
+    FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+
+    CONSTRAINT FK_ventas_tipos_tarjeta
+    FOREIGN KEY (tipo_tarjeta) REFERENCES tipos_tarjeta(tipo)
         ON DELETE RESTRICT ON UPDATE CASCADE
 
 ) ENGINE=InnoDB;
