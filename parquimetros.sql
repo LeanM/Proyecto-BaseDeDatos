@@ -117,12 +117,6 @@ CREATE TABLE ventas(
     fecha DATE NOT NULL,
     hora TIME NOT NULL,
 
-    CONSTRAINT pk_ventas
-    PRIMARY KEY (id_tarjeta,fecha,hora),
-
-    CONSTRAINT FK_ventas_tarjetas
-    FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
-
     PRIMARY KEY (fecha,hora,id_tarjeta),
 
     CONSTRAINT FK_ventas_tarjetas
