@@ -53,7 +53,7 @@ CREATE TABLE tipos_tarjeta(
 
 CREATE TABLE tarjetas(
     id_tarjeta INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    saldo DECIMAL(5,2) UNIQUE NOT NULL, # Tres digitos enteros y dos decimales
+    saldo DECIMAL(5,2) NOT NULL, # Tres digitos enteros y dos decimales
     tipo VARCHAR(45) NOT NULL,
     patente VARCHAR(6) NOT NULL,
 
@@ -117,15 +117,7 @@ CREATE TABLE ventas(
     fecha DATE NOT NULL,
     hora TIME NOT NULL,
 
-    PRIMARY KEY (fecha,hora,id_tarjeta),
-
-    CONSTRAINT FK_ventas_tarjetas
-    FOREIGN KEY (id_tarjeta) REFERENCES tarjetas(id_tarjeta)
-        ON DELETE RESTRICT ON UPDATE CASCADE,
-
-    CONSTRAINT FK_ventas_tipos_tarjeta
-    FOREIGN KEY (tipo_tarjeta) REFERENCES tipos_tarjeta(tipo)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+    PRIMARY KEY (id_tarjeta)
 
 ) ENGINE=InnoDB;
 
@@ -270,7 +262,7 @@ begin
 			set fecha_hora_actual = ADDTIME(CONVERT(fecha_actual, DATETIME), hora_actual);
 
 			set tiempo = TIMESTAMPDIFF(MINUTE,fecha_hora_entrada,fecha_hora_actual);
-			set nuevo_saldo = saldo - (tiempo * tarifa * (1 - descuento));
+			set nuevo_saldo = GREATEST(saldo - (tiempo * tarifa * (1 - descuento)) , -999.99 );  # La deuda maxima es de -999.99
 
 			update tarjetas t
 			set saldo = nuevo_saldo where t.id_tarjeta = id_tarjeta;
