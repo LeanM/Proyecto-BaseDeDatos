@@ -226,13 +226,15 @@ use parquimetros;
 delimiter !
 create procedure conectar (IN id_tarjeta INTEGER, IN id_parq INTEGER)
 begin
-    declare id_tarjeta_AUX,id_parq_AUX INTEGER;
+    declare id_tarjeta_CONEXION,id_parq_CONEXION,id_parq_ORIGINAL INTEGER;
     declare saldo,nuevo_saldo,tarifa DECIMAL(5,2);
     declare fecha_entrada,fecha_actual DATE;
     declare hora_entrada,hora_actual TIME;
     declare fecha_hora_entrada,fecha_hora_actual DATETIME;
     declare tiempo INTEGER;
     declare descuento DECIMAL(3,2);
+	declare calle_ORIGINAL VARCHAR(45);
+    declare altura_ORIGINAL INTEGER;
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		BEGIN # Si se produce una SQLEXCEPTION, se retrocede la transacción con ROLLBACK
@@ -243,65 +245,69 @@ begin
 		
 	START TRANSACTION;
 
-		select t.id_tarjeta into id_tarjeta_AUX from estacionados natural join tarjetas t natural join parquimetros p where id_tarjeta = t.id_tarjeta and id_parq = p.id_parq;
-
-		if id_tarjeta_AUX = id_tarjeta then
-			select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
-			select t.saldo into saldo from tarjetas t where id_tarjeta = t.id_tarjeta;
-
-			#   En estos creo que puede devolver mas de 1 tupla (seria un problema por el into)
-			select hora_ent into hora_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal is NULL and e.hora_sal is NULL;
-			select fecha_ent into fecha_entrada from estacionamientos e where e.id_tarjeta = id_tarjeta and e.id_parq = id_parq and e.fecha_sal is NULL and e.hora_sal is NULL;
-
-			select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
-
-			set fecha_actual = CURRENT_DATE();
-			set hora_actual = CURRENT_TIME();
-
-			set fecha_hora_entrada = ADDTIME(CONVERT(fecha_entrada, DATETIME), hora_entrada);
-			set fecha_hora_actual = ADDTIME(CONVERT(fecha_actual, DATETIME), hora_actual);
-
-			set tiempo = TIMESTAMPDIFF(MINUTE,fecha_hora_entrada,fecha_hora_actual);
-			set nuevo_saldo = GREATEST(saldo - (tiempo * tarifa * (1 - descuento)) , -999.99 );  # La deuda maxima es de -999.99
-
-			update tarjetas t
-			set saldo = nuevo_saldo where t.id_tarjeta = id_tarjeta;
-
-			update estacionamientos e
-			set hora_sal = hora_actual, fecha_sal = fecha_actual where e.id_tarjeta = id_tarjeta;
-
-			select 'cierre' as operacion, tiempo as tiempo_transcurrido_minutos, nuevo_saldo as saldo_actualizado;
-
-		else
-			select id_tarjeta into id_tarjeta_AUX from tarjetas t where t.id_tarjeta = id_tarjeta;
-			select id_parq into id_parq_AUX from parquimetros p where p.id_parq = id_parq;
-
-			if id_tarjeta = id_tarjeta_AUX and id_parq = id_parq_AUX then
-
-				select t.saldo into saldo from tarjetas t where t.id_tarjeta = id_tarjeta;
-				select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
+		select e.id_tarjeta,e.fecha_ent,e.hora_ent,e.id_parq into id_tarjeta_CONEXION,fecha_entrada,hora_entrada,id_parq_ORIGINAL from estacionamientos e where e.id_tarjeta = id_tarjeta and e.fecha_sal is NULL and e.hora_sal is NULL; # Para cada tarjeta hay a lo sumo un estacionamiento abierto 
+		select id_parq into id_parq_CONEXION from parquimetros p where p.id_parq = id_parq; # Checkeo que el numero de parquimetro ingresado este en la base de datos 
+		
+		if id_parq = id_parq_CONEXION then
+			
+			if (id_tarjeta_CONEXION = id_tarjeta and id_parq_CONEXION = id_parq) then  # Aca ocurre que implicitamente el numero de tarjeta esta en la base de datos
 				select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
+				select t.saldo into saldo from tarjetas t where id_tarjeta = t.id_tarjeta;
+				select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq_ORIGINAL = p.id_parq;
+				
+				select calle,altura into calle_ORIGINAL,altura_ORIGINAL from estacionamientos e natural join parquimetros where e.id_tarjeta=id_tarjeta and e.fecha_sal is NULL and e.hora_sal is NULL;
 
-				set tiempo = saldo / (tarifa * (1 - descuento));
+				set fecha_actual = CURRENT_DATE();
+				set hora_actual = CURRENT_TIME();
 
-				if saldo > 0 then
-					set fecha_actual = CURRENT_DATE();
-					set hora_actual = CURRENT_TIME();
+				set fecha_hora_entrada = ADDTIME(CONVERT(fecha_entrada, DATETIME), hora_entrada);
+				set fecha_hora_actual = ADDTIME(CONVERT(fecha_actual, DATETIME), hora_actual);
 
-					INSERT INTO estacionamientos values (id_tarjeta,id_parq,fecha_actual,hora_actual,NULL,NULL);
+				set tiempo = TIMESTAMPDIFF(MINUTE,fecha_hora_entrada,fecha_hora_actual);
+				set nuevo_saldo = GREATEST(saldo - (tiempo * tarifa * (1 - descuento)) , -999.99 ); # La deuda maxima es de -999.99
 
-					select 'apertura' as operacion, 'exitosa' as estado, tiempo as tiempo_disponible;
+				update tarjetas t
+				set saldo = nuevo_saldo where t.id_tarjeta = id_tarjeta;
 
-				else
-					select 'apertura' as operacion, 'fallida (saldo menor o igual a 0)' as estado;
-				end if;
+				update estacionamientos e
+				set hora_sal = hora_actual, fecha_sal = fecha_actual where e.id_tarjeta = id_tarjeta;
+
+				select 'cierre' as operacion, calle_ORIGINAL as calle, altura_ORIGINAL as altura, tiempo as tiempo_transcurrido_minutos, nuevo_saldo as saldo_actualizado;
 
 			else
-				select 'Transaccion fallida (id_tarjera o id_parq no pertenecen a la B.D)' as estado_Operacion;
+				select id_tarjeta into id_tarjeta_CONEXION from tarjetas t where t.id_tarjeta = id_tarjeta;
+
+				if id_tarjeta = id_tarjeta_CONEXION then
+
+					select t.saldo into saldo from tarjetas t where t.id_tarjeta = id_tarjeta;
+					select u.tarifa into tarifa from ubicaciones u natural join parquimetros p where id_parq = p.id_parq;
+					select ti.descuento into descuento from tipos_tarjeta ti natural join tarjetas t where id_tarjeta = t.id_tarjeta;
+
+					set tiempo = saldo / (tarifa * (1 - descuento));
+
+					if saldo > 0 then
+						set fecha_actual = CURRENT_DATE();
+						set hora_actual = CURRENT_TIME();
+
+						INSERT INTO estacionamientos values (id_tarjeta,id_parq,fecha_actual,hora_actual,NULL,NULL);
+
+						select 'apertura' as operacion, 'exitosa' as estado, tiempo as tiempo_disponible;
+
+					else
+						select 'apertura' as operacion, 'fallida (saldo menor o igual a 0)' as estado;
+					end if;
+
+				else
+					select 'Transaccion fallida (id_tarjeta no pertenecen a la B.D)' as estado_Operacion;
+
+				end if;
+
 
 			end if;
-
-
+			
+		else 
+			select 'Transaccion fallida (id_parq no pertenecen a la B.D)' as estado_Operacion;
+			
 		end if;
 
 	COMMIT;

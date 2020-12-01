@@ -48,11 +48,29 @@ public class VentanaConexionParquimetro extends VentanaConUbicaciones {
 				    conexion = tablaBD.getConnection();
 				    stmt = conexion.createStatement();
 		            sql = "CALL conectar("+tarjetas.getSelectedItem()+","+parquimetros.getSelectedItem()+")";
-		         
 		            rs = stmt.executeQuery(sql);
-		            tabla.refresh(rs);
+		            //tabla.refresh(rs);
+		            //JOptionPane.showMessageDialog(null, tabla,"Mensaje",JOptionPane.INFORMATION_MESSAGE);
 		            
-		            JOptionPane.showMessageDialog(null, tabla,"Mensaje",JOptionPane.INFORMATION_MESSAGE);
+		           
+					if(rs.next()) {
+						String operacion = rs.getString("Operacion");
+						String mensaje = "Hola";
+						
+						if(operacion.equals("Apertura")) {
+							String estado = rs.getString("Estado");
+							if(estado.equals("Exitosa"))
+								mensaje = "Se abrio exitosamente un estacionamiento en la ubicacion seleccionada, con "+rs.getString("Tiempo_disponible")+" minuto/s disponible/s";
+							if(estado.equals("Fallida (saldo menor o igual a 0)"))
+								mensaje = "No se pudo abrir el estacionamiento porque no se dispone de saldo";
+						}
+						
+						else if(operacion.equals("Cierre")) 
+						    	mensaje = "Se cerro el estacionamiento abierto en "+rs.getString("Calle")+" al "+rs.getString("Altura")+", de "+rs.getString("Tiempo_transcurrido_minutos")+" minuto/s de duracion, y el saldo de la tarjeta quedo en "+rs.getString("Saldo_actualizado")+" peso/s";                                                                          
+							else mensaje = "Datos incorrectos, estado de la transaccion: "+rs.getString("Estado"); // No pasa desde la aplicacion porque los valores siempre estan en la bd pero lo pongo por completitud
+						
+						JOptionPane.showMessageDialog(null, mensaje);
+					}
 		            
 		            stmt.close();
 		            rs.close();
